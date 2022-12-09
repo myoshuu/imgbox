@@ -21,6 +21,11 @@ const routes = [
     name: "dashboard",
     component: () => import("../pages/Dashboard.vue"),
   },
+  {
+    path: "/dashboard/edit/:id",
+    name: "edit",
+    component: () => import("../pages/EditData.vue"),
+  },
 ];
 
 const router = createRouter({

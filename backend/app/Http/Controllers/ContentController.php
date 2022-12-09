@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ContentController extends Controller
@@ -13,7 +15,7 @@ class ContentController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  public function index()
+  public function index(Request $request)
   {
     $content = Content::join('users', 'users.id', '=', 'contents.user_id')
       ->select('contents.*', 'users.nama as user_nama')
@@ -34,7 +36,9 @@ class ContentController extends Controller
       'img_path' => 'required|image',
       'title' => 'required|string',
       'description' => 'required|string',
+      'category' => 'required|string',
       'user_id' => 'integer',
+
     ]);
 
     if ($validator->fails()) {
@@ -47,13 +51,14 @@ class ContentController extends Controller
       $pict->move(public_path('uploads'), $pict_url);
     }
 
-    $user = auth()->user();
+    $user = User::where('remember_token', $request->token)->get();
 
     $content = new Content();
-    $content->img_path = $pict_url;
+    $content->img_path = explode('/', $pict_url)[1];
     $content->title = $request->title;
     $content->description = $request->description;
-    $content->user_id = $user->id;
+    $content->category = $request->category;
+    $content->user_id = $user[0]->id;
     $content->save();
 
     return response()->json(['message' => 'content created'], 200);
@@ -65,8 +70,17 @@ class ContentController extends Controller
    * @param  \App\Models\Content  $content
    * @return \Illuminate\Http\Response
    */
-  public function show(Content $content)
+  public function showByUserId($id, Request $request)
   {
+    $user = User::where('id', $id)->get();
+    $content = Content::where('user_id', $user[0]->id)->get();
+    return response()->json($content, 200);
+  }
+
+  public function show($id)
+  {
+    $content = Content::where('id', $id)->get();
+    return response()->json($content, 200);
   }
 
   /**
@@ -79,10 +93,11 @@ class ContentController extends Controller
   public function update(Request $request, Content $content)
   {
     $validator = Validator::make($request->all(), [
-      'img_path' => 'required|image',
-      'title' => 'required|string',
-      'description' => 'required|string',
-      'user_id' => 'integer',
+      // 'img_path' => 'required|image',
+      // 'title' => 'required|string',
+      // 'description' => 'required|string',
+      // 'category' => 'required|string',
+      // 'user_id' => 'integer',
     ]);
 
     if ($validator->fails()) {
@@ -96,12 +111,13 @@ class ContentController extends Controller
       $pict->move(public_path('uploads'), $pict_url);
     }
 
-    $user = auth()->user();
+    $user = User::where('remember_token', $request->token)->get();
 
     $content->update([
-      'img_path' => $pict_url,
+      'img_path' => explode('/', $pict_url)[1],
       'title' => $request->title,
       'description' => $request->description,
+      'category' => $request->category,
       'user_id' => $user->id,
     ]);
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -22,7 +23,9 @@ class AuthController extends Controller
     }
 
     $user = auth()->user();
-    $token = $user->createToken('token')->plainTextToken;
+    $id = $user->id;
+    $token = Str::random(60);
+    User::where('id', $id)->update(['remember_token' => $token]);
 
     return response()->json(['message' => 'login success', 'token' => $token, 'user' => $user], 200);
   }
@@ -49,15 +52,15 @@ class AuthController extends Controller
     return response()->json(['message' => 'register success'], 200);
   }
 
-  public function profile()
+  public function profile(Request $request)
   {
-    $user = auth()->user();
-    return response()->json(['message' => 'success', 'data' => $user], 200);
+    $user = User::where('remember_token', $request->token)->first();
+    return $user;
   }
 
-  public function logout()
+  public function logout(Request $request)
   {
-    auth()->user()->tokens()->delete();
+    User::where('remember_token', $request->token)->update(['remember_token' => null]);
     return response()->json(['message' => 'logout success'], 200);
   }
 }

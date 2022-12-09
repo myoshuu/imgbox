@@ -1,13 +1,6 @@
 <template>
   <nav class="flex items-center justify-between px-10 py-5">
     <p class="font-bold text-xl">ImgBox</p>
-    <form action="">
-      <input
-        class="border border-black py-2 px-5 rounded-lg w-[30rem]"
-        type="text"
-        placeholder="Search"
-      />
-    </form>
     <ul>
       <div class="flex gap-5" v-if="!token">
         <li><router-link :to="{ name: 'login' }">Login</router-link></li>
@@ -37,16 +30,14 @@
             tabindex="0"
             class="dropdown-content menu p-2 border bg-base-100 rounded-box w-52"
           >
-            <li>
-              <div class="flex items-center">
-                <i class="fa-solid fa-gauge"></i>
-                <span class="font-medium">
-                  <router-link :to="{ name: 'dashboard' }"
-                    >Dashboard</router-link
-                  >
-                </span>
-              </div>
-            </li>
+            <router-link class="w-full" :to="{ name: 'dashboard' }">
+              <li>
+                <div class="flex items-center">
+                  <i class="fa-solid fa-gauge"></i>
+                  <span class="font-medium"> Dashboard </span>
+                </div>
+              </li>
+            </router-link>
             <li @click.prevent="logout" class="hover:bg-red-600 rounded-lg">
               <div class="flex items-center hover:text-white">
                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -73,6 +64,7 @@ export default {
     showModal() {
       document.getElementById("modal").classList.toggle("hidden");
     },
+
     logout() {
       axios
         .post(`${this.url}/logout`)

@@ -2,7 +2,7 @@
   <div class="w-[100vw] h-[100vh] flex justify-center items-center">
     <form
       @submit.prevent="register"
-      class="border border-black rounded-lg p-5 w-[280px]"
+      class="border border-black rounded-lg p-5 w-[400px]"
       action=""
     >
       <router-link class="text-blue-800" :to="{ name: 'home' }"

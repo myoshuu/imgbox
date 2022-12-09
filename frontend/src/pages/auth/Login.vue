@@ -62,12 +62,8 @@ export default {
         .then((res) => {
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("name", res.data.user.nama);
+          localStorage.setItem("id", res.data.user.id);
 
-          axios.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${localStorage.token}`;
-
-          console.log(res.data.message);
           this.$router.push({ name: "home" });
         })
         .catch((err) => {

@@ -25,14 +25,16 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/content', [ContentController::class, 'index']);
 
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+Route::group(['middleware' => 'custom'], function () {
   Route::post('/logout', [AuthController::class, 'logout']);
   Route::get('/profile', [AuthController::class, 'profile']);
 
   // Content
   Route::prefix('content')->group(function () {
     Route::post('/', [ContentController::class, 'store']);
+    Route::get('/user/{content}', [ContentController::class, 'showByUserId']);
+    Route::get('/{content}', [ContentController::class, 'show']);
     Route::put('/{content}', [ContentController::class, 'update']);
-    Route::delete('/{content}', [ContentController::class, 'destroy']);
+    Route::post('/{content}', [ContentController::class, 'destroy']);
   });
 });
